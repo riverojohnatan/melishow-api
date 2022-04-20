@@ -1,11 +1,13 @@
 package com.meli.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
+@Builder
 public class BookingSeatDTO {
 
     @JsonProperty(value = "numbers")

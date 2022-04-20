@@ -1,14 +1,13 @@
 package com.meli.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.collect.Lists;
+import lombok.Builder;
 import lombok.Data;
 
-import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@Builder
 public class BookingDTO {
 
     @JsonProperty(value = "id")

@@ -15,6 +15,9 @@ import java.util.List;
 @Service
 public class ShowService {
 
+    public static final String INVALID_SEAT_ERROR_MESSAGE = "Not valid Seat for Show Id: ";
+    public static final String INVALID_SHOW_ID_ERROR_MESSAGE = "Invalid show id: ";
+
     @Autowired
     private ShowRepository showRepository;
     @Autowired
@@ -51,7 +54,7 @@ public class ShowService {
                 List<String> bookingSeatNumbers = seatDTO.getNumbers();
 
                 for (String seatNumber : bookingSeatNumbers) {
-                    if (!seatNumbers.contains(seatNumber)) throw new MeliShowException("Not valid Seat for Show Id: " + seatDTO.getShowId());
+                    if (!seatNumbers.contains(seatNumber)) throw new MeliShowException(INVALID_SEAT_ERROR_MESSAGE + seatDTO.getShowId());
                     seatNumbers.remove(seatNumber);
                     seatCount++;
                 }
@@ -68,7 +71,7 @@ public class ShowService {
     }
 
     private void validations(Seat seat, BookingSeatDTO seatDTO) {
-        if (seat == null)  throw new MeliShowException("Invalid show id: " + seatDTO.getShowId());
-        if (seatDTO.getNumbers().size() > seat.getSeatNumberList().size()) throw new MeliShowException("Not valid Seat for Show Id: " + seatDTO.getShowId());
+        if (seat == null)  throw new MeliShowException(INVALID_SHOW_ID_ERROR_MESSAGE + seatDTO.getShowId());
+        if (seatDTO.getNumbers().size() > seat.getSeatNumberList().size()) throw new MeliShowException(INVALID_SEAT_ERROR_MESSAGE + seatDTO.getShowId());
     }
 }

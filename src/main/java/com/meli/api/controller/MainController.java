@@ -1,4 +1,4 @@
-package com.meli.api.controllers;
+package com.meli.api.controller;
 
 import com.meli.api.model.BookingDTO;
 import com.meli.api.model.Seat;
@@ -28,6 +28,7 @@ class MainController {
     @GetMapping(value = "/show/{id}/seats")
     public ResponseEntity<List<Seat>> getEvents(@PathVariable(value = "id") final Long showId) {
         List<Seat> seats = this.service.getSeats(showId);
+        if (seats.size() == 0) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(seats, HttpStatus.OK);
     }
 

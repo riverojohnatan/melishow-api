@@ -2,12 +2,13 @@ package com.meli.api.model;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "show")
+@Data
 public class Show {
 
     @Id

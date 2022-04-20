@@ -1,11 +1,13 @@
 package com.meli.api.controllers;
 
-import com.meli.api.model.Booking;
+import com.meli.api.model.BookingDTO;
 import com.meli.api.model.Seat;
 import com.meli.api.model.Show;
+import com.meli.api.model.exception.MeliShowException;
 import com.meli.api.service.ShowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,20 +20,24 @@ class MainController {
     private ShowService service;
 
     @GetMapping(value = "/shows")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Show> getShows() {
-        return this.service.getShows();
+    public ResponseEntity<List<Show>> getShows() {
+        List<Show> shows = this.service.getShows();
+        return new ResponseEntity<>(shows, HttpStatus.OK);
     }
 
     @GetMapping(value = "/show/{id}/seats")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Seat> getEvents(@PathVariable(value = "id") final Long showId) {
-        return this.service.getSeats(showId);
+    public ResponseEntity<List<Seat>> getEvents(@PathVariable(value = "id") final Long showId) {
+        List<Seat> seats = this.service.getSeats(showId);
+        return new ResponseEntity<>(seats, HttpStatus.OK);
     }
 
     @PostMapping(value = "/book")
-    @ResponseStatus(HttpStatus.OK)
-    public void postBook(@RequestBody Booking request) {
-        this.service.doBooking(request);
+    public ResponseEntity<String> postBook(@RequestBody BookingDTO request) {
+        try {
+            this.service.doBooking(request);
+            return new ResponseEntity<>(HttpStatus.CREATED.getReasonPhrase(), HttpStatus.CREATED);
+        } catch (MeliShowException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 }

@@ -62,7 +62,7 @@ public class MainControllerTest {
     void getEvents_responseOK() {
         when(service.getSeats(any(Long.class))).thenReturn(seats);
 
-        ResponseEntity<List<Seat>> response = mainController.getEvents(shows.get(0).getId());
+        ResponseEntity<List<Seat>> response = mainController.getSeats(shows.get(0).getId());
         assertEquals(response.getStatusCode(), HttpStatus.OK);
     }
 
@@ -70,7 +70,7 @@ public class MainControllerTest {
     void getEvents_responseNOTFOUND() {
         when(service.getSeats(any(Long.class))).thenReturn(Lists.newArrayList());
 
-        ResponseEntity<List<Seat>> response = mainController.getEvents(WRONG_ID);
+        ResponseEntity<List<Seat>> response = mainController.getSeats(WRONG_ID);
         assertEquals(response.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 

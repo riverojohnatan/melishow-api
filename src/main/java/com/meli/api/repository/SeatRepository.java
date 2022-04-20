@@ -2,6 +2,7 @@ package com.meli.api.repository;
 
 import com.meli.api.model.Seat;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,4 +11,6 @@ import java.util.List;
 public interface SeatRepository extends JpaRepository<Seat, Long> {
 
     List<Seat> findByShowId(Long showId);
+
+    Seat findSeatByShowIdAndRow(Long showId, String row);
 }

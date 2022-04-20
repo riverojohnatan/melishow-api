@@ -1,5 +1,6 @@
 package com.meli.api.controllers;
 
+import com.meli.api.model.Booking;
 import com.meli.api.model.Seat;
 import com.meli.api.model.Show;
 import com.meli.api.service.ShowService;
@@ -26,5 +27,11 @@ class MainController {
     @ResponseStatus(HttpStatus.OK)
     public List<Seat> getEvents(@PathVariable(value = "id") final Long showId) {
         return this.service.getSeats(showId);
+    }
+
+    @PostMapping(value = "/book")
+    @ResponseStatus(HttpStatus.OK)
+    public void postBook(@RequestBody Booking request) {
+        this.service.doBooking(request);
     }
 }

@@ -22,6 +22,8 @@ public class ShowService {
 
     public static final String INVALID_SEAT_ERROR_MESSAGE = "Not valid Seat for Show Id: ";
     public static final String INVALID_SHOW_ID_ERROR_MESSAGE = "Invalid show id: ";
+    public static final String INVALiD_DATE_FILTER_MESSAGE = "Invalid date range";
+    public static final String INVALiD_PRICE_FILTER_MESSAGE = "Invalid price range";
 
     @Autowired
     private ShowRepository showRepository;
@@ -31,6 +33,7 @@ public class ShowService {
     private BookingRepository bookingRepository;
 
     public List<Show> getShows(FilterDTO filter){
+        validateFilters(filter);
         if (filter.getStartDate() != null && filter.getEndDate() != null
             && filter.getBottomPrice() != null && filter.getTopPrice() != null) {
             List<Long> showIdList = this.seatRepository
@@ -51,6 +54,7 @@ public class ShowService {
     }
 
     public List<Seat> getSeats(Long showId, FilterDTO filter) {
+        validateFilters(filter);
         if (filter.getStartDate() != null && filter.getEndDate() != null
                 && filter.getBottomPrice() != null && filter.getTopPrice() != null) {
             return this.seatRepository
@@ -107,5 +111,12 @@ public class ShowService {
     private void validations(Seat seat, BookingSeatDTO seatDTO) {
         if (seat == null)  throw new MeliShowException(INVALID_SHOW_ID_ERROR_MESSAGE + seatDTO.getShowId());
         if (seatDTO.getNumbers().size() > seat.getSeatNumberList().size()) throw new MeliShowException(INVALID_SEAT_ERROR_MESSAGE + seatDTO.getShowId());
+    }
+
+    private void validateFilters(FilterDTO filterDTO) {
+        if (filterDTO.getEndDate() != null && filterDTO.getStartDate() != null
+                && filterDTO.getEndDate().getTime() < filterDTO.getStartDate().getTime()) throw new MeliShowException(INVALiD_DATE_FILTER_MESSAGE);
+        if (filterDTO.getTopPrice() != null && filterDTO.getBottomPrice() != null
+                && filterDTO.getTopPrice() < filterDTO.getBottomPrice()) throw new MeliShowException(INVALiD_PRICE_FILTER_MESSAGE);
     }
 }

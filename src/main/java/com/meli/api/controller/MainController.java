@@ -31,9 +31,13 @@ class MainController {
     })
     @GetMapping(value = "/shows")
     public ResponseEntity<List<Show>> getShows(FilterDTO filter) {
-        List<Show> shows = this.service.getShows(filter);
-        if (shows.size() == 0) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(shows, HttpStatus.OK);
+        try {
+            List<Show> shows = this.service.getShows(filter);
+            if (shows.size() == 0) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(shows, HttpStatus.OK);
+        } catch (MeliShowException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @ApiOperation(value = "Get seat list by show id", response = Iterable.class, tags = "getSeats",
@@ -44,9 +48,13 @@ class MainController {
     })
     @GetMapping(value = "/show/{id}/seats")
     public ResponseEntity<List<Seat>> getSeats(@PathVariable(value = "id") final Long showId, FilterDTO filter) {
-        List<Seat> seats = this.service.getSeats(showId, filter);
-        if (seats.size() == 0) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(seats, HttpStatus.OK);
+        try {
+            List<Seat> seats = this.service.getSeats(showId, filter);
+            if (seats.size() == 0) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(seats, HttpStatus.OK);
+        } catch (MeliShowException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @ApiOperation(value = "Post booking request", response = Iterable.class, tags = "postBook", produces = MediaType.APPLICATION_JSON_VALUE)

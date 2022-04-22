@@ -15,10 +15,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -35,6 +37,7 @@ public class MainControllerTest {
     private List<Seat> seats;
 
     private static final Long WRONG_ID = 0L;
+    private static final Calendar calendar = Calendar.getInstance();
 
     @BeforeEach
     public void setup() {
@@ -55,7 +58,7 @@ public class MainControllerTest {
 
     @Test
     void getShows_responseOK() {
-        when(service.getShows(new FilterDTO())).thenReturn(shows);
+        when(service.getShows(any(FilterDTO.class))).thenReturn(shows);
 
         ResponseEntity<List<Show>> response = mainController.getShows(new FilterDTO());
         assertEquals(response.getStatusCode(), HttpStatus.OK);
@@ -67,6 +70,35 @@ public class MainControllerTest {
 
         ResponseEntity<List<Show>> response = mainController.getShows(new FilterDTO());
         assertEquals(response.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void getShows_response_WrongDate() {
+        Date now = calendar.getTime();
+        calendar.add(Calendar.DATE, -1);
+        Date yesterday = calendar.getTime();
+        FilterDTO filter = new FilterDTO();
+        filter.setStartDate(now);
+        filter.setEndDate(yesterday);
+
+        when(service.getShows(any(FilterDTO.class))).thenCallRealMethod();
+
+        ResponseEntity<List<Show>> response = mainController.getShows(filter);
+        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void getShows_response_WrongPrice() {
+        FilterDTO filter = new FilterDTO();
+        filter.setBottomPrice(2F);
+        filter.setTopPrice(1F);
+
+        when(service.getShows(any(FilterDTO.class))).thenCallRealMethod();
+
+        ResponseEntity<List<Show>> response = mainController.getShows(filter);
+        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+        assertNull(response.getBody());
     }
 
     @Test
@@ -83,6 +115,35 @@ public class MainControllerTest {
 
         ResponseEntity<List<Seat>> response = mainController.getSeats(WRONG_ID, new FilterDTO());
         assertEquals(response.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void getEvents_response_WrongDate() {
+        Date now = calendar.getTime();
+        calendar.add(Calendar.DATE, -1);
+        Date yesterday = calendar.getTime();
+        FilterDTO filter = new FilterDTO();
+        filter.setStartDate(now);
+        filter.setEndDate(yesterday);
+
+        when(service.getSeats(any(Long.class), any(FilterDTO.class))).thenCallRealMethod();
+
+        ResponseEntity<List<Seat>> response = mainController.getSeats(shows.get(0).getId(), filter);
+        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void getEvents_response_WrongPrice() {
+        FilterDTO filter = new FilterDTO();
+        filter.setBottomPrice(2F);
+        filter.setTopPrice(1F);
+
+        when(service.getSeats(any(Long.class), any(FilterDTO.class))).thenCallRealMethod();
+
+        ResponseEntity<List<Seat>> response = mainController.getSeats(shows.get(0).getId(), filter);
+        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+        assertNull(response.getBody());
     }
 
     @Test

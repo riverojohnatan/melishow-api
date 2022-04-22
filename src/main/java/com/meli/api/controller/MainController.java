@@ -1,8 +1,9 @@
 package com.meli.api.controller;
 
-import com.meli.api.model.BookingDTO;
 import com.meli.api.model.Seat;
 import com.meli.api.model.Show;
+import com.meli.api.model.dto.BookingDTO;
+import com.meli.api.model.dto.FilterDTO;
 import com.meli.api.model.exception.MeliShowException;
 import com.meli.api.service.ShowService;
 import io.swagger.annotations.ApiOperation;
@@ -29,12 +30,13 @@ class MainController {
             @ApiResponse(code = 404, message = "Not Found")
     })
     @GetMapping(value = "/shows")
-    public ResponseEntity<List<Show>> getShows() {
-        List<Show> shows = this.service.getShows();
+    public ResponseEntity<List<Show>> getShows(FilterDTO filter) {
+        List<Show> shows = this.service.getShows(filter);
         return new ResponseEntity<>(shows, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Get seat list by show id", response = Iterable.class, tags = "getSeats", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get seat list by show id", response = Iterable.class, tags = "getSeats",
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success|OK"),
             @ApiResponse(code = 404, message = "Not Found")

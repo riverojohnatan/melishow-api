@@ -1,4 +1,4 @@
-package com.meli.api.model;
+package com.meli.api.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;

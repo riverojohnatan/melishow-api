@@ -1,9 +1,10 @@
 package com.meli.api.controller;
 
 import com.google.common.collect.Lists;
-import com.meli.api.model.BookingDTO;
 import com.meli.api.model.Seat;
 import com.meli.api.model.Show;
+import com.meli.api.model.dto.BookingDTO;
+import com.meli.api.model.dto.FilterDTO;
 import com.meli.api.model.exception.MeliShowException;
 import com.meli.api.service.ShowService;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,14 +49,15 @@ public class MainControllerTest {
         seat.setRow("A");
         seat.setSeatNumbers(Lists.newArrayList("1,2,3"));
         seat.setSeatPrice(150.30F);
+        seat.setShowDate(new Date(System.currentTimeMillis()));
         seats = Lists.newArrayList(seat);
     }
 
     @Test
     void getShows_responseOK() {
-        when(service.getShows()).thenReturn(shows);
+        when(service.getShows(new FilterDTO())).thenReturn(shows);
 
-        ResponseEntity<List<Show>> response = mainController.getShows();
+        ResponseEntity<List<Show>> response = mainController.getShows(new FilterDTO());
         assertEquals(response.getStatusCode(), HttpStatus.OK);
     }
 

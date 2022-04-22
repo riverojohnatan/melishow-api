@@ -4,12 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
 import lombok.Data;
-import org.apache.tomcat.util.json.JSONParser;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.*;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -37,6 +34,10 @@ public class Seat {
     @JsonProperty(value = "seat_numbers")
     @Column(name = "seat_numbers")
     private String seatNumbers;
+
+    @JsonProperty(value = "show_date")
+    @Column(name = "show_date")
+    private Date showDate;
 
     @JsonIgnore
     public List<String> getSeatNumberList() {

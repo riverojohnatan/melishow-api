@@ -1,7 +1,12 @@
 package com.meli.api.service;
 
 import com.google.common.collect.Lists;
-import com.meli.api.model.*;
+import com.meli.api.model.Booking;
+import com.meli.api.model.Seat;
+import com.meli.api.model.Show;
+import com.meli.api.model.dto.BookingDTO;
+import com.meli.api.model.dto.BookingSeatDTO;
+import com.meli.api.model.dto.FilterDTO;
 import com.meli.api.repository.BookingRepository;
 import com.meli.api.repository.SeatRepository;
 import com.meli.api.repository.ShowRepository;
@@ -10,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.Date;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -43,7 +49,7 @@ public class ShowServiceTest {
         show.setName("Test");
         when(showRepository.findAll()).thenReturn(asList(show));
 
-        List<Show> showList = this.showService.getShows();
+        List<Show> showList = this.showService.getShows(new FilterDTO());
         assertEquals(showList.get(0).getName(), show.getName());
     }
 
@@ -55,6 +61,7 @@ public class ShowServiceTest {
         seat.setRow(ROW);
         seat.setSeatNumbers(Lists.newArrayList("1,2,3"));
         seat.setSeatPrice(150.30F);
+        seat.setShowDate(new Date(System.currentTimeMillis()));
         when(seatRepository.findByShowId(anyLong())).thenReturn(asList(seat));
 
         List<Seat> seatList = this.showService.getSeats(RIGHT_ID);
@@ -69,6 +76,7 @@ public class ShowServiceTest {
         seat.setRow(ROW);
         seat.setSeatNumbers(SEATS);
         seat.setSeatPrice(PRICE);
+        seat.setShowDate(new Date(System.currentTimeMillis()));
         BookingDTO bookingDTO = setBookingDTO();
 
         when(seatRepository.findSeatByShowIdAndRow(anyLong(), anyString()))
@@ -153,6 +161,7 @@ public class ShowServiceTest {
                         .numbers(SEATS)
                         .row(ROW)
                         .build()))
+                .date(new Date(System.currentTimeMillis()))
                 .build();
     }
 }

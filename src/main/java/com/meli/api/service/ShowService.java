@@ -1,7 +1,12 @@
 package com.meli.api.service;
 
 import com.google.common.collect.Lists;
-import com.meli.api.model.*;
+import com.meli.api.model.Booking;
+import com.meli.api.model.Seat;
+import com.meli.api.model.Show;
+import com.meli.api.model.dto.BookingDTO;
+import com.meli.api.model.dto.BookingSeatDTO;
+import com.meli.api.model.dto.FilterDTO;
 import com.meli.api.model.exception.MeliShowException;
 import com.meli.api.repository.BookingRepository;
 import com.meli.api.repository.SeatRepository;
@@ -25,8 +30,24 @@ public class ShowService {
     @Autowired
     private BookingRepository bookingRepository;
 
-    public List<Show> getShows(){
-        return Lists.newArrayList(this.showRepository.findAll());
+    public List<Show> getShows(FilterDTO filter){
+        if (filter.getStartDate() != null && filter.getEndDate() != null
+            && filter.getBottomPrice() != null && filter.getTopPrice() != null) {
+            List<Long> showIdList = this.seatRepository
+                    .getDistinctShowIdByShowDateBetweenAndSeatPriceBetween(filter.getStartDate(), filter.getEndDate(),
+                            filter.getBottomPrice(), filter.getTopPrice());
+            return this.showRepository.getAllByIdList(showIdList);
+        } else if (filter.getStartDate() != null && filter.getEndDate() != null ) {
+            List<Long> showIdList = this.seatRepository
+                    .getDistinctShowIdByShowDateBetween(filter.getStartDate(), filter.getEndDate());
+            return this.showRepository.getAllByIdList(showIdList);
+        } else if (filter.getBottomPrice() != null && filter.getTopPrice() != null) {
+            List<Long> showIdList = this.seatRepository
+                    .getDistinctShowIdBySeatPriceBetween(filter.getBottomPrice(), filter.getTopPrice());
+            return this.showRepository.getAllByIdList(showIdList);
+        } else {
+            return Lists.newArrayList(this.showRepository.findAll());
+        }
     }
 
     public List<Seat> getSeats(Long showId) {

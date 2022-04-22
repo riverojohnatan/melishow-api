@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -35,6 +36,9 @@ public class Booking {
 
     @Column(name = "show_id")
     private Long showId;
+
+    @Column(name = "date")
+    private Date date;
 
     public List<String> getSeatNumberList() {
         if (this.seatNumbers == null) return new ArrayList<>();

@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS seat (
 	id serial4 NOT NULL,
 	"row" varchar NOT NULL DEFAULT 'A',
 	seat_numbers varchar NOT NULL,
+	show_date timestamp NOT NULL,
 	CONSTRAINT seat_pk PRIMARY KEY (id, show_id)
 );
 
@@ -24,7 +25,8 @@ CREATE TABLE IF NOT EXISTS booking (
 	seat_row varchar NOT NULL,
 	seat_numbers varchar NOT NULL,
 	seat_price numeric NOT NULL,
-	show_id int4 NOT NULL
+	show_id int4 NOT NULL,
+	date timestamp NOT NULL
 );
 
 

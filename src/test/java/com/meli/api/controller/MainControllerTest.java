@@ -62,18 +62,26 @@ public class MainControllerTest {
     }
 
     @Test
-    void getEvents_responseOK() {
-        when(service.getSeats(any(Long.class))).thenReturn(seats);
+    void getShows_responseNOTFOUND() {
+        when(service.getShows(any(FilterDTO.class))).thenReturn(Lists.newArrayList());
 
-        ResponseEntity<List<Seat>> response = mainController.getSeats(shows.get(0).getId());
+        ResponseEntity<List<Show>> response = mainController.getShows(new FilterDTO());
+        assertEquals(response.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void getEvents_responseOK() {
+        when(service.getSeats(any(Long.class), any(FilterDTO.class))).thenReturn(seats);
+
+        ResponseEntity<List<Seat>> response = mainController.getSeats(shows.get(0).getId(), new FilterDTO());
         assertEquals(response.getStatusCode(), HttpStatus.OK);
     }
 
     @Test
     void getEvents_responseNOTFOUND() {
-        when(service.getSeats(any(Long.class))).thenReturn(Lists.newArrayList());
+        when(service.getSeats(any(Long.class), any(FilterDTO.class))).thenReturn(Lists.newArrayList());
 
-        ResponseEntity<List<Seat>> response = mainController.getSeats(WRONG_ID);
+        ResponseEntity<List<Seat>> response = mainController.getSeats(WRONG_ID, new FilterDTO());
         assertEquals(response.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 

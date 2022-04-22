@@ -23,4 +23,13 @@ public interface SeatRepository extends CrudRepository<Seat, Long> {
 
     @Query("SELECT distinct s.showId FROM Seat s where s.showDate between :startDate and :endDate and s.seatPrice between :bottomPrice and :topPrice")
     List<Long> getDistinctShowIdByShowDateBetweenAndSeatPriceBetween(Date startDate, Date endDate, Float bottomPrice, Float topPrice);
+
+    @Query("SELECT s FROM Seat s where s.showId = :showId and s.showDate between :startDate and :endDate")
+    List<Seat> getAllByShowDateBetween(Long showId, Date startDate, Date endDate);
+
+    @Query("SELECT s FROM Seat s where s.showId = :showId and s.seatPrice between :bottomPrice and :topPrice")
+    List<Seat> getAllBySeatPriceBetween(Long showId, Float bottomPrice, Float topPrice);
+
+    @Query("SELECT s FROM Seat s where s.showId = :showId and s.showDate between :startDate and :endDate and s.seatPrice between :bottomPrice and :topPrice")
+    List<Seat> getAllByShowDateBetweenAndSeatPriceBetween(Long showId, Date startDate, Date endDate, Float bottomPrice, Float topPrice);
 }

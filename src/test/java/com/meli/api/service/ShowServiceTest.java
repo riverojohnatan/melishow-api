@@ -10,6 +10,7 @@ import com.meli.api.model.dto.FilterDTO;
 import com.meli.api.repository.BookingRepository;
 import com.meli.api.repository.SeatRepository;
 import com.meli.api.repository.ShowRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,43 +42,153 @@ public class ShowServiceTest {
     private static final String ROW = "A";
     private static final List<String> SEATS = Lists.newArrayList("1","2","3");
     private static final Float PRICE = 150.30F;
+    private static final List<Long> ID_LIST = Lists.newArrayList(1L,2L);
 
-    @Test
-    void getShows_responseList() {
-        Show show = new Show();
+    private List<Show> shows;
+    private List<Seat> seats;
+    private BookingDTO bookingDTO;
+    private Seat seat;
+    private Show show;
+
+    @BeforeEach
+    private void setup() {
+        shows = Lists.newArrayList();
+
+        show = new Show();
         show.setId(RIGHT_ID);
         show.setName("Test");
-        when(showRepository.findAll()).thenReturn(asList(show));
+        shows.add(show);
 
-        List<Show> showList = this.showService.getShows(new FilterDTO());
-        assertEquals(showList.get(0).getName(), show.getName());
-    }
+        show.setId(RIGHT_ID+1);
+        show.setName("Test 2");
+        shows.add(show);
 
-    @Test
-    void getSeats_responseList() {
-        Seat seat = new Seat();
+        seats = Lists.newArrayList();
+
+        seat = new Seat();
         seat.setId(RIGHT_ID);
         seat.setShowId(RIGHT_ID);
         seat.setRow(ROW);
         seat.setSeatNumbers(Lists.newArrayList("1,2,3"));
         seat.setSeatPrice(150.30F);
         seat.setShowDate(new Date(System.currentTimeMillis()));
-        when(seatRepository.findByShowId(anyLong())).thenReturn(asList(seat));
+        seats.add(seat);
 
-        List<Seat> seatList = this.showService.getSeats(RIGHT_ID);
-        assertEquals(seatList.get(0).getRow(), ROW);
+        seat.setId(RIGHT_ID+1);
+        seat.setShowId(RIGHT_ID+1);
+        seat.setRow(ROW);
+        seat.setSeatNumbers(Lists.newArrayList("1,2,3"));
+        seat.setSeatPrice(100.70F);
+        seat.setShowDate(new Date(System.currentTimeMillis()));
+        seats.add(seat);
+
+        bookingDTO = setBookingDTO();
+    }
+
+    @Test
+    void getShows_responseList() {
+        when(showRepository.findAll()).thenReturn(shows);
+
+        List<Show> showList = this.showService.getShows(new FilterDTO());
+        assertEquals(showList.size(), shows.size());
+    }
+
+    @Test
+    void getShows_responseList_withAllFilters() {
+        FilterDTO filter = new FilterDTO();
+        filter.setStartDate(new Date());
+        filter.setEndDate(new Date());
+        filter.setBottomPrice(1F);
+        filter.setTopPrice(1F);
+
+        when(seatRepository.getDistinctShowIdByShowDateBetweenAndSeatPriceBetween(any(Date.class), any(Date.class),
+                any(Float.class), any(Float.class))).thenReturn(ID_LIST);
+        when(showRepository.getAllByIdList(any(List.class))).thenReturn(shows);
+
+        List<Show> showList = this.showService.getShows(filter);
+        assertEquals(showList.size(), shows.size());
+    }
+
+    @Test
+    void getShows_responseList_withDateFilters() {
+        FilterDTO filter = new FilterDTO();
+        filter.setStartDate(new Date());
+        filter.setEndDate(new Date());
+
+        when(seatRepository.getDistinctShowIdByShowDateBetween(any(Date.class), any(Date.class))).thenReturn(ID_LIST);
+        when(showRepository.getAllByIdList(any(List.class))).thenReturn(shows);
+
+        List<Show> showList = this.showService.getShows(filter);
+        assertEquals(showList.size(), shows.size());
+    }
+
+    @Test
+    void getShows_responseList_withPriceFilters() {
+        FilterDTO filter = new FilterDTO();
+        filter.setBottomPrice(1F);
+        filter.setTopPrice(1F);
+
+        when(seatRepository.getDistinctShowIdBySeatPriceBetween(any(Float.class), any(Float.class))).thenReturn(ID_LIST);
+        when(showRepository.getAllByIdList(any(List.class))).thenReturn(shows);
+
+        List<Show> showList = this.showService.getShows(filter);
+        assertEquals(showList.size(), shows.size());
+    }
+
+    @Test
+    void getSeats_responseList() {
+        when(seatRepository.findByShowId(anyLong())).thenReturn(seats);
+
+        List<Seat> seatList = this.showService.getSeats(RIGHT_ID, new FilterDTO());
+        assertEquals(seatList.size(), seats.size());
+    }
+
+    @Test
+    void getSeats_responseList_withAllFilters() {
+        FilterDTO filter = new FilterDTO();
+        filter.setStartDate(new Date());
+        filter.setEndDate(new Date());
+        filter.setBottomPrice(1F);
+        filter.setTopPrice(1F);
+
+        when(seatRepository.getAllByShowDateBetweenAndSeatPriceBetween(any(Long.class), any(Date.class),
+                any(Date.class), any(Float.class), any(Float.class))).thenReturn(seats);
+
+        List<Seat> seatList = this.showService.getSeats(RIGHT_ID, filter);
+        assertEquals(seatList.size(), seats.size());
+    }
+
+    @Test
+    void getSeats_responseList_withDateFilters() {
+        FilterDTO filter = new FilterDTO();
+        filter.setStartDate(new Date());
+        filter.setEndDate(new Date());
+
+        when(seatRepository.getAllByShowDateBetween(any(Long.class), any(Date.class), any(Date.class)))
+                .thenReturn(seats);
+
+        List<Seat> seatList = this.showService.getSeats(RIGHT_ID, filter);
+        assertEquals(seatList.size(), seats.size());
+    }
+
+    @Test
+    void getSeats_responseList_withPriceFilters() {
+        FilterDTO filter = new FilterDTO();
+        filter.setBottomPrice(1F);
+        filter.setTopPrice(1F);
+
+        when(seatRepository.getAllBySeatPriceBetween(any(Long.class), any(Float.class), any(Float.class)))
+                .thenReturn(seats);
+
+        List<Seat> seatList = this.showService.getSeats(RIGHT_ID, filter);
+        assertEquals(seatList.size(), seats.size());
     }
 
     @Test
     void doBooking_OK() {
-        Seat seat = new Seat();
         seat.setId(RIGHT_ID);
         seat.setShowId(RIGHT_ID);
         seat.setRow(ROW);
-        seat.setSeatNumbers(SEATS);
-        seat.setSeatPrice(PRICE);
-        seat.setShowDate(new Date(System.currentTimeMillis()));
-        BookingDTO bookingDTO = setBookingDTO();
 
         when(seatRepository.findSeatByShowIdAndRow(anyLong(), anyString()))
                 .thenReturn(seat);
@@ -96,7 +207,6 @@ public class ShowServiceTest {
 
     @Test
     void doBooking_WrongShowID_Exception() {
-        BookingDTO bookingDTO = setBookingDTO();
 
         when(seatRepository.findSeatByShowIdAndRow(anyLong(), anyString()))
                 .thenReturn(null);
@@ -115,13 +225,9 @@ public class ShowServiceTest {
 
     @Test
     void doBooking_WrongSeatList_Exception() {
-        Seat seat = new Seat();
         seat.setId(RIGHT_ID);
         seat.setShowId(RIGHT_ID);
-        seat.setRow(ROW);
         seat.setSeatNumbers(SEATS.subList(0,1));
-        seat.setSeatPrice(PRICE);
-        BookingDTO bookingDTO = setBookingDTO();
 
         when(seatRepository.findSeatByShowIdAndRow(anyLong(), anyString()))
                 .thenReturn(seat);

@@ -32,6 +32,7 @@ class MainController {
     @GetMapping(value = "/shows")
     public ResponseEntity<List<Show>> getShows(FilterDTO filter) {
         List<Show> shows = this.service.getShows(filter);
+        if (shows.size() == 0) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(shows, HttpStatus.OK);
     }
 
@@ -42,8 +43,8 @@ class MainController {
             @ApiResponse(code = 404, message = "Not Found")
     })
     @GetMapping(value = "/show/{id}/seats")
-    public ResponseEntity<List<Seat>> getSeats(@PathVariable(value = "id") final Long showId) {
-        List<Seat> seats = this.service.getSeats(showId);
+    public ResponseEntity<List<Seat>> getSeats(@PathVariable(value = "id") final Long showId, FilterDTO filter) {
+        List<Seat> seats = this.service.getSeats(showId, filter);
         if (seats.size() == 0) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(seats, HttpStatus.OK);
     }

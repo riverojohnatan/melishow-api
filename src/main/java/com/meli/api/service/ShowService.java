@@ -50,8 +50,21 @@ public class ShowService {
         }
     }
 
-    public List<Seat> getSeats(Long showId) {
-        return this.seatRepository.findByShowId(showId);
+    public List<Seat> getSeats(Long showId, FilterDTO filter) {
+        if (filter.getStartDate() != null && filter.getEndDate() != null
+                && filter.getBottomPrice() != null && filter.getTopPrice() != null) {
+            return this.seatRepository
+                    .getAllByShowDateBetweenAndSeatPriceBetween(showId, filter.getStartDate(), filter.getEndDate(),
+                            filter.getBottomPrice(), filter.getTopPrice());
+        } else if (filter.getStartDate() != null && filter.getEndDate() != null ) {
+            return this.seatRepository
+                    .getAllByShowDateBetween(showId, filter.getStartDate(), filter.getEndDate());
+        } else if (filter.getBottomPrice() != null && filter.getTopPrice() != null) {
+            return this.seatRepository
+                    .getAllBySeatPriceBetween(showId, filter.getBottomPrice(), filter.getTopPrice());
+        } else {
+            return this.seatRepository.findByShowId(showId);
+        }
     }
 
     @Transactional

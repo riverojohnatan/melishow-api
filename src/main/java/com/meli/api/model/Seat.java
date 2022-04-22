@@ -21,6 +21,7 @@ public class Seat {
     private Long id;
 
     @Column(name = "show_id")
+    @JsonProperty(value = "show_id")
     private Long showId;
 
     @Column(name = "seat_price")

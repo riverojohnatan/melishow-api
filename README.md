@@ -43,6 +43,11 @@ Realizar una API que
       "numbers": ["2"]
       }
       ```
+Dicha API debe estar en alguna plataforma cloud
+
+## Solucion
+Utilice JAVA 11 para desarrollar la solucion como un Maven Project utilizando Spring Boot, Hibernate y springfox-swagger2 como dependencias  
+En cuanto a Cloud plataform decidi utilizar AWS Cloud, con Elastic Beanstalk para crear el nodo y PostgreSQL como RD
 
 ## Important Links
 

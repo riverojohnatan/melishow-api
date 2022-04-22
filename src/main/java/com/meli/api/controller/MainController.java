@@ -7,6 +7,7 @@ import com.meli.api.model.dto.FilterDTO;
 import com.meli.api.model.exception.MeliShowException;
 import com.meli.api.service.ShowService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ class MainController {
             @ApiResponse(code = 404, message = "Not Found")
     })
     @GetMapping(value = "/shows")
-    public ResponseEntity<List<Show>> getShows(FilterDTO filter) {
+    public ResponseEntity<List<Show>> getShows(@ApiParam(name = "filer") FilterDTO filter) {
         try {
             List<Show> shows = this.service.getShows(filter);
             if (shows.size() == 0) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
@@ -47,7 +48,8 @@ class MainController {
             @ApiResponse(code = 404, message = "Not Found")
     })
     @GetMapping(value = "/show/{id}/seats")
-    public ResponseEntity<List<Seat>> getSeats(@PathVariable(value = "id") final Long showId, FilterDTO filter) {
+    public ResponseEntity<List<Seat>> getSeats(@PathVariable(value = "id") @ApiParam(name = "id", value = "Show Id", example = "1") final Long showId,
+        @ApiParam(name = "filer", value = "Filters", example = "startDate=20-04-2022&endDate=25-04-2022&bottomPrice=100&topPrice=200") FilterDTO filter) {
         try {
             List<Seat> seats = this.service.getSeats(showId, filter);
             if (seats.size() == 0) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);

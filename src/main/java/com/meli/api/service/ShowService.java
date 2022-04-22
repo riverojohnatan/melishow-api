@@ -76,25 +76,24 @@ public class ShowService {
         if (bookingDTO.getSeats().size() > 0) {
             Long bookingID = null;
             for(BookingSeatDTO seatDTO : bookingDTO.getSeats()) {
-                Seat seat = this.seatRepository.findSeatByShowIdAndRow(seatDTO.getShowId(), seatDTO.getRow());
-                validations(seat, seatDTO);
+                Seat seat = this.seatRepository.findSeatByShowIdAndRowAndShowDate(bookingDTO.getShowId(), seatDTO.getRow(), bookingDTO.getDate());
+                validations(seat, seatDTO, bookingDTO.getShowId());
 
-                int seatCount = 0;
                 Booking booking = new Booking();
                 booking.setId(bookingID);
                 booking.setDocument(bookingDTO.getDocument());
                 booking.setName(bookingDTO.getName());
                 booking.setSeatRow(seatDTO.getRow());
-                booking.setShowId(seatDTO.getShowId());
+                booking.setShowId(bookingDTO.getShowId());
                 booking.setSeatPrice(seat.getSeatPrice());
+                booking.setDate(bookingDTO.getDate());
 
                 List<String> seatNumbers = seat.getSeatNumberList();
                 List<String> bookingSeatNumbers = seatDTO.getNumbers();
 
                 for (String seatNumber : bookingSeatNumbers) {
-                    if (!seatNumbers.contains(seatNumber)) throw new MeliShowException(INVALID_SEAT_ERROR_MESSAGE + seatDTO.getShowId());
+                    if (!seatNumbers.contains(seatNumber)) throw new MeliShowException(INVALID_SEAT_ERROR_MESSAGE + bookingDTO.getShowId() + " and Row: " + seatDTO.getRow());
                     seatNumbers.remove(seatNumber);
-                    seatCount++;
                 }
 
                 seat.setSeatNumbers(seatNumbers);
@@ -108,9 +107,9 @@ public class ShowService {
         }
     }
 
-    private void validations(Seat seat, BookingSeatDTO seatDTO) {
-        if (seat == null)  throw new MeliShowException(INVALID_SHOW_ID_ERROR_MESSAGE + seatDTO.getShowId());
-        if (seatDTO.getNumbers().size() > seat.getSeatNumberList().size()) throw new MeliShowException(INVALID_SEAT_ERROR_MESSAGE + seatDTO.getShowId());
+    private void validations(Seat seat, BookingSeatDTO seatDTO, Long showId) {
+        if (seat == null)  throw new MeliShowException(INVALID_SHOW_ID_ERROR_MESSAGE + showId);
+        if (seatDTO.getNumbers().size() > seat.getSeatNumberList().size()) throw new MeliShowException(INVALID_SEAT_ERROR_MESSAGE + showId + " and Row: " + seatDTO.getRow());
     }
 
     private void validateFilters(FilterDTO filterDTO) {

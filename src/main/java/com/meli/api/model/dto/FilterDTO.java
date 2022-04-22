@@ -10,9 +10,9 @@ import java.util.Date;
 @NoArgsConstructor
 public class FilterDTO {
 
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date startDate;
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date endDate;
     private Float bottomPrice;
     private Float topPrice;

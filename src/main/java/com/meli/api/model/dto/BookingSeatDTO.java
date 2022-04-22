@@ -16,9 +16,6 @@ public class BookingSeatDTO {
     @JsonProperty(value = "row")
     private String row;
 
-    @JsonProperty(value = "show_id")
-    private Long showId;
-
     public String getSeatNumbers() {
         return String.join(",", this.numbers);
     }

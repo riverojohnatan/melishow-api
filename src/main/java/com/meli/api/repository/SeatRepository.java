@@ -13,7 +13,7 @@ public interface SeatRepository extends CrudRepository<Seat, Long> {
 
     List<Seat> findByShowId(Long showId);
 
-    Seat findSeatByShowIdAndRow(Long showId, String row);
+    Seat findSeatByShowIdAndRowAndShowDate(Long showId, String row, Date showDate);
 
     @Query("SELECT distinct s.showId FROM Seat s where s.showDate between :startDate and :endDate")
     List<Long> getDistinctShowIdByShowDateBetween(Date startDate, Date endDate);

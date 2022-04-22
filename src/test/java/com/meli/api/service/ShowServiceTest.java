@@ -190,7 +190,7 @@ public class ShowServiceTest {
         seat.setShowId(RIGHT_ID);
         seat.setRow(ROW);
 
-        when(seatRepository.findSeatByShowIdAndRow(anyLong(), anyString()))
+        when(seatRepository.findSeatByShowIdAndRowAndShowDate(anyLong(), anyString(), any(Date.class)))
                 .thenReturn(seat);
         when(seatRepository.save(any(Seat.class))).thenReturn(seat);
         when(bookingRepository.save(any(Booking.class))).thenReturn(translateDTO(bookingDTO));
@@ -198,7 +198,7 @@ public class ShowServiceTest {
         showService.doBooking(bookingDTO);
 
         inOrder(seatRepository).verify(seatRepository, calls(1))
-                .findSeatByShowIdAndRow(anyLong(), anyString());
+                .findSeatByShowIdAndRowAndShowDate(anyLong(), anyString(), any(Date.class));
         inOrder(seatRepository).verify(seatRepository, calls(1))
             .save(any(Seat.class));
         inOrder(bookingRepository).verify(bookingRepository, calls(1))
@@ -208,17 +208,17 @@ public class ShowServiceTest {
     @Test
     void doBooking_WrongShowID_Exception() {
 
-        when(seatRepository.findSeatByShowIdAndRow(anyLong(), anyString()))
+        when(seatRepository.findSeatByShowIdAndRowAndShowDate(anyLong(), anyString(), any(Date.class)))
                 .thenReturn(null);
 
         try {
             showService.doBooking(bookingDTO);
         } catch (Exception e) {
-            assertEquals(e.getMessage(), ShowService.INVALID_SHOW_ID_ERROR_MESSAGE + bookingDTO.getSeats().get(0).getShowId());
+            assertEquals(e.getMessage(), ShowService.INVALID_SHOW_ID_ERROR_MESSAGE + bookingDTO.getShowId());
         }
 
         inOrder(seatRepository).verify(seatRepository, calls(1))
-                .findSeatByShowIdAndRow(anyLong(), anyString());
+                .findSeatByShowIdAndRowAndShowDate(anyLong(), anyString(), any(Date.class));
         inOrder(seatRepository).verify(seatRepository, never()).save(any(Seat.class));
         inOrder(bookingRepository).verify(bookingRepository, never()).save(any(Booking.class));
     }
@@ -229,18 +229,18 @@ public class ShowServiceTest {
         seat.setShowId(RIGHT_ID);
         seat.setSeatNumbers(SEATS.subList(0,1));
 
-        when(seatRepository.findSeatByShowIdAndRow(anyLong(), anyString()))
+        when(seatRepository.findSeatByShowIdAndRowAndShowDate(anyLong(), anyString(), any(Date.class)))
                 .thenReturn(seat);
         when(seatRepository.save(any(Seat.class))).thenReturn(seat);
 
         try {
             showService.doBooking(bookingDTO);
         } catch (Exception e) {
-            assertEquals(e.getMessage(), ShowService.INVALID_SEAT_ERROR_MESSAGE + bookingDTO.getSeats().get(0).getShowId());
+            assertEquals(ShowService.INVALID_SEAT_ERROR_MESSAGE + bookingDTO.getShowId() + " and Row: " + seat.getRow(), e.getMessage());
         }
 
         inOrder(seatRepository).verify(seatRepository, calls(1))
-                .findSeatByShowIdAndRow(anyLong(), anyString());
+                .findSeatByShowIdAndRowAndShowDate(anyLong(), anyString(), any(Date.class));
         inOrder(seatRepository).verify(seatRepository, never()).save(any(Seat.class));
         inOrder(bookingRepository).verify(bookingRepository, never()).save(any(Booking.class));
     }
@@ -249,6 +249,7 @@ public class ShowServiceTest {
         Booking booking = new Booking();
 
         booking.setId(RIGHT_ID);
+        booking.setShowId(RIGHT_ID);
         booking.setDocument(bookingDTO.getDocument());
         booking.setName(bookingDTO.getName());
         booking.setSeatPrice(PRICE);
@@ -262,8 +263,8 @@ public class ShowServiceTest {
         return BookingDTO.builder()
                 .document("123456789")
                 .name("Test Name")
+                .showId(RIGHT_ID)
                 .seats(asList(BookingSeatDTO.builder()
-                        .showId(RIGHT_ID)
                         .numbers(SEATS)
                         .row(ROW)
                         .build()))

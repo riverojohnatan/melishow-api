@@ -22,8 +22,11 @@ public class BookingDTO {
     private String document;
 
     @JsonProperty(value = "date", required = true)
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date date;
+
+    @JsonProperty(value = "show_id")
+    private Long showId;
 
     @JsonProperty(value = "seats", required = true)
     private List<BookingSeatDTO> seats;
